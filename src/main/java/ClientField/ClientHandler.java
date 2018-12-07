@@ -1,5 +1,6 @@
 package ClientField;
 
+import SafeContext.SRP;
 import Wrapper.Wrapper;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -30,8 +31,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         firstMessage.add(Integer.valueOf(i));
         }
         */
-        firstMessage.add("netty");
-        firstMessage.add("hueta");
+
     }
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws RuntimeException{
@@ -48,6 +48,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         }
         if(id.length()>3&&pass.length()>3){
             client=new ClientField(id,pass);
+            System.out.println(SRP.getN()+" "+SRP.getG());
         }
         else{
             ctx.close();
@@ -89,6 +90,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                     client.setbBig(b);
                     if (!"0".equals(client.scrambler())) {
                         client.keyComp();
+                        System.out.println(client.key);
                         String a = client.confirmationHash();
                         System.out.println(a);
                         ArrayList<Object> data = new ArrayList<Object>();

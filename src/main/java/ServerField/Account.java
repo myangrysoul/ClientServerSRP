@@ -22,7 +22,7 @@ public class Account {
     private String m;
     private String r;
     private String u;
-    private String key;
+    public String key;
 
     public String getR() {
         return r;

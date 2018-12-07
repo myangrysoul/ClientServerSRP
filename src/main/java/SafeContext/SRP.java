@@ -9,18 +9,20 @@ import java.util.Random;
 
 import static java.lang.Math.sqrt;
 
-public class SRP {
+public  class SRP {
 
     private static long n;
     private static long fi;
     private static final int k=3;
     private static long g;
+    private static int counter;
 
-    public SRP(){
-        n=randomPrime();
-        fi=n-1;
-        g=primitiveRoot(numberFactorization());
-    }
+
+public SRP(){
+    n=23;
+    fi=n-1;
+    g=primitiveRoot(numberFactorization());
+}
 
     public static long getN() {
         return n;
@@ -35,25 +37,21 @@ public class SRP {
     }
 
     public static void main(String[] args){
-        String pasw="loh1337";
-        String salt="debil228";
-        String hash="";
-        byte [] paswNsalt =(pasw+salt).getBytes();
-        hash = getHash(paswNsalt);
 
-        System.out.println(hash);
-        String h=hash.substring(0,16);
-        System.out.println(h);
-        int i1=987993866;
-        hash=SRP.getHash((salt+pasw).getBytes());
-        BigInteger big=new BigInteger(hash, 16);
-        System.out.println(big);
-        long i=Long.parseLong(h,16);
-        String string="2477916e1afab6f-6c08-425e-9821-93aa74c300a4";
-        String [] mas=string.split("e1afab6f-6c08-425e-9821-93aa74c300a4");
-        System.out.println(mas[0]);
+    String a="asdajkasdxnksdhaukshjdxbasmxbnaskduy192e3173ew1isjkadxasd";
+        String b="asdajkasdxnksdhaukshjdxbasmxbnaskduy192e3173ew1isjkadxasd";
+        System.out.println(getHash(a.getBytes()));
+        System.out.println(getHash(b.getBytes()));
 
         }
+    /*public static void init(){
+        if(counter<1){
+            n=randomPrime();
+            fi=n-1;
+            g=primitiveRoot(numberFactorization());
+            counter++;
+        }
+    }*/
 
 
 
@@ -61,9 +59,7 @@ public class SRP {
 
 
 
-
-
-    private boolean isPrime(int n) {
+    private static boolean isPrime(int n) {
         for (int i = 2; i <= sqrt(n); i++) {
             if (n % i == 0) {
                 return false;
@@ -72,7 +68,7 @@ public class SRP {
         return true;
     }
 
-    private int randomPrime() {
+    private static int randomPrime() {
         int a = 20000;
         int b = 2100000;
         int i;
@@ -90,7 +86,7 @@ public class SRP {
         String hashValue="";
         try {
 
-            MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
             byte[] digestBytes = messageDigest.digest(inputBytes);
             hashValue = DatatypeConverter.printHexBinary(digestBytes).toLowerCase();
         }
@@ -101,7 +97,7 @@ public class SRP {
     }
 
 
-    private ArrayList<Long> numberFactorization() {
+    private static ArrayList<Long> numberFactorization() {
         ArrayList<Long> fact = new ArrayList<Long>();
         long number1 = fi;
         while (number1 % 2 == 0) {
@@ -125,12 +121,12 @@ public class SRP {
 
 
 
-    private long primitiveRoot(ArrayList<Long> fact) {
+    private static long primitiveRoot(ArrayList<Long> fact) {
         int g;
-        for (g = 1; g <= n + 1; g++) {
+        for (g = 1; g <= fi + 1; g++) {
             boolean check = true;
             for (Long aFact : fact) {
-                long a= powMod(g, n / aFact,n+1);
+                long a= powMod(g, fi / aFact,fi+1);
                 check &= a != 1;
             }
             if (check) {

@@ -6,7 +6,7 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Random;
 
-public class ServerField {
+public  class ServerField {
 
 ServerField(String id, Account acc){
     accounts.put(id,acc);
@@ -25,10 +25,12 @@ ServerField(String id, Account acc){
     }
 
     void generateB(String userId) {
-        int b = randomNatural();
+        //int b = randomNatural();
+        int b=942;
         accounts.get(userId).setB(b);
         long passV = accounts.get(userId).getPass_verifier();
         long bBig = SRP.getK() * passV + SRP.powMod(SRP.getG(), b, SRP.getN());
+        bBig %= SRP.getN();
         accounts.get(userId).setbBig(bBig);
 
     }
@@ -39,8 +41,9 @@ ServerField(String id, Account acc){
         long aBig = acc.getaBig();
         long b = acc.getB();
         long v = acc.getPass_verifier();
-        BigInteger ex1 = BigInteger.valueOf(v).modPow(U, BigInteger.valueOf(SRP.getN()).multiply(BigInteger.valueOf(aBig)));
-        S=ex1.modPow(BigInteger.valueOf(b),BigInteger.valueOf(SRP.getN()));
+        BigInteger ex1 = BigInteger.valueOf(v).modPow(U, BigInteger.valueOf(SRP.getN())).pow((int)b);
+        S=ex1.multiply(BigInteger.valueOf(aBig)).mod(BigInteger.valueOf(SRP.getN()));
+        System.out.println("S "+S);
         acc.setKey(SRP.getHash(S.toString().getBytes()));
     }
 

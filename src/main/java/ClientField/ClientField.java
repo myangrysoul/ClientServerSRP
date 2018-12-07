@@ -15,20 +15,21 @@ public class ClientField {
     private String id;
     private int a;
     private long aBig;
-    private String key;
+     String key;
     private long bBig;
     private String u;
     private String m;
     private String r;
 
-    private SRP srp=new SRP();
 
 
 
     ClientField(String id, String pass){
+        new SRP();
         this.pass=pass;
         this.id=id;
-        salt=UUID.randomUUID().toString();
+        //salt=UUID.randomUUID().toString();
+        salt="ebal nety";
         String hash=SRP.getHash((salt+this.pass).getBytes());
         x=new BigInteger(hash,16);
         System.out.println(x);
@@ -46,10 +47,10 @@ public class ClientField {
     void keyComp(){
         BigInteger S;
         BigInteger U=new BigInteger(u,16);
-        long b=Long.valueOf(BigInteger.valueOf(SRP.getG()).modPow(x,BigInteger.valueOf(SRP.getN())).toString());
-        long ex1=bBig-SRP.getK()*b;
+        long ex1=bBig-SRP.getK()*pass_verifier;
         BigInteger ex2=U.multiply(x).add(BigInteger.valueOf(a));
         S=BigInteger.valueOf(ex1).modPow(ex2,BigInteger.valueOf(SRP.getN()));
+        System.out.println("S: "+S);
         key=SRP.getHash(S.toString().getBytes());
     }
 
@@ -72,7 +73,8 @@ public class ClientField {
     }
 
     long compA(){
-        a=randomNatural();
+        //a=randomNatural();
+        a=84;
         aBig=SRP.powMod(SRP.getG(),a,SRP.getN());
         return aBig;
     }

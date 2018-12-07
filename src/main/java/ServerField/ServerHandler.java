@@ -15,6 +15,7 @@
  */
 package ServerField;
 
+import SafeContext.SRP;
 import Wrapper.Wrapper;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -37,6 +38,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         switch (msg1.getStage()){
         case 1:
             server=new ServerField(user,new Account((Long)data.get(2),(String) data.get(1)));
+            System.out.println(SRP.getN() + " " + SRP.getG());
+            System.out.println(SRP.getN() + " " + SRP.getG());
             ctx.write("Account have created!!");
             break;
         case 2:
@@ -52,6 +55,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             }
             if(!"0".equals(server.scrambler(user))){
                 server.keyCompute(user);
+                System.out.println(server.accounts.get(user).key);
                 server.confirmationHash(user);
                 System.out.println(server.accounts.get(user).getM());
                 ctx.write(new Wrapper(2,null,server.accounts.get(user).getM()));
