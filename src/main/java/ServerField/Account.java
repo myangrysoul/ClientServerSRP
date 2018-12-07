@@ -5,6 +5,15 @@ public class Account {
     private long pass_verifier;
     private long bBig;
     private long aBig;
+    private long b;
+
+    public void setB(long b) {
+        this.b = b;
+    }
+
+    public long getB() {
+        return b;
+    }
 
     public String getM() {
         return m;
@@ -14,6 +23,14 @@ public class Account {
     private String r;
     private String u;
     private String key;
+
+    public String getR() {
+        return r;
+    }
+
+    public void setR(String r) {
+        this.r = r;
+    }
 
     public Account(long pass_verifier, String salt) {
         this.pass_verifier = pass_verifier;

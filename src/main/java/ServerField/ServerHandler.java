@@ -15,18 +15,69 @@
  */
 package ServerField;
 
+import Wrapper.Wrapper;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Handles both client-side and server-side handler depending on which
  * constructor was called.
  */
 public class ServerHandler extends ChannelInboundHandlerAdapter {
+    private  ServerField server;
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        System.out.println(msg);
-        ctx.write(msg);
+        Wrapper msg1=(Wrapper)msg;
+        ArrayList<Object> data=msg1.getData();
+        String user =(String) data.get(0);
+        switch (msg1.getStage()){
+        case 1:
+            server=new ServerField(user,new Account((Long)data.get(2),(String) data.get(1)));
+            ctx.write("Account have created!!");
+            break;
+        case 2:
+            long aBig=(Long)data.get(1);
+            if(aBig!=0){
+                server.receive(user,aBig);
+                server.generateB(user);
+                ctx.write(new Wrapper(1,null,server.accounts.get(user).getbBig()+server.accounts.get(user).getUser_salt()));
+            }
+            else{
+                ctx.close();
+                throw new RuntimeException("Error");
+            }
+            if(!"0".equals(server.scrambler(user))){
+                server.keyCompute(user);
+                server.confirmationHash(user);
+                System.out.println(server.accounts.get(user).getM());
+                ctx.write(new Wrapper(2,null,server.accounts.get(user).getM()));
+                System.out.println(server.accounts.get(user).getM());
+            }
+            else {
+                ctx.close();
+            }
+
+            break;
+        case 3:
+            if(data.get(1).equals(server.accounts.get(user).getM())){
+                server.compR(user);
+                ctx.write(new Wrapper(3,null,server.accounts.get(user).getR()));
+            }
+            break;
+        case 4:
+            if(data.get(1).equals(server.accounts.get(user).getR())){
+                System.out.println("Server you are real");
+            }
+            else{
+                ctx.close();
+            }
+            break;
+        }
+        ctx.flush();
     }
 
     @Override

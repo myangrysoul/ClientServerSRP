@@ -16,10 +16,10 @@ public class SRP {
     private static final int k=3;
     private static long g;
 
-    SRP(){
+    public SRP(){
         n=randomPrime();
         fi=n-1;
-        primitiveRoot(numberFactorization());
+        g=primitiveRoot(numberFactorization());
     }
 
     public static long getN() {
@@ -49,10 +49,14 @@ public class SRP {
         BigInteger big=new BigInteger(hash, 16);
         System.out.println(big);
         long i=Long.parseLong(h,16);
+        String string="2477916e1afab6f-6c08-425e-9821-93aa74c300a4";
+        String [] mas=string.split("e1afab6f-6c08-425e-9821-93aa74c300a4");
+        System.out.println(mas[0]);
 
-        System.out.println(i);
+        }
 
-    }
+
+
 
 
 

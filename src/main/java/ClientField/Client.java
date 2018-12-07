@@ -58,8 +58,8 @@ public final class Client {
                              new ObjectEncoder(),
                              new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
                              new ClientHandler(),
-                             new StringEncoder(),
-                             new StringDecoder(),
+                            // new StringEncoder(),
+                             //new StringDecoder(),
                              new DelimiterBasedFrameDecoder(1000, Delimiters.lineDelimiter()));
                  }
              });

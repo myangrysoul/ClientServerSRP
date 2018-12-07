@@ -49,7 +49,7 @@ public final class Server {
                          p.addLast(sslCtx.newHandler(ch.alloc()));
                      }
                      p.addLast(
-                             new LoggingHandler(LogLevel.DEBUG),
+                             new LoggingHandler(LogLevel.TRACE),
                              new ObjectEncoder(),
                              new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
                              new ServerHandler());
