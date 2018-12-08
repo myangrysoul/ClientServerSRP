@@ -25,17 +25,15 @@ public class ClientField {
 
 
     ClientField(String id, String pass){
-        new SRP();
+        SRP.init();
         this.pass=pass;
         this.id=id;
-        //salt=UUID.randomUUID().toString();
-        salt="ebal nety";
+        salt=UUID.randomUUID().toString();
         String hash=SRP.getHash((salt+this.pass).getBytes());
         x=new BigInteger(hash,16);
-        System.out.println(x);
-       // pass_verifier= SRP.powMod(SRP.getG(),,SRP.getN());
         BigInteger pv=BigInteger.valueOf(SRP.getG()).modPow(x,BigInteger.valueOf(SRP.getN()));
         pass_verifier=Long.valueOf(pv.toString());
+        System.out.println("passv "+pass_verifier);
 
     }
 
@@ -50,8 +48,8 @@ public class ClientField {
         long ex1=bBig-SRP.getK()*pass_verifier;
         BigInteger ex2=U.multiply(x).add(BigInteger.valueOf(a));
         S=BigInteger.valueOf(ex1).modPow(ex2,BigInteger.valueOf(SRP.getN()));
-        System.out.println("S: "+S);
         key=SRP.getHash(S.toString().getBytes());
+        System.out.println("Key: "+key);
     }
 
     String confirmationHash(){
@@ -73,7 +71,7 @@ public class ClientField {
     }
 
     long compA(){
-        //a=randomNatural();
+        a=randomNatural();
         a=84;
         aBig=SRP.powMod(SRP.getG(),a,SRP.getN());
         return aBig;

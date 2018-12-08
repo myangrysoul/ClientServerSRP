@@ -58,6 +58,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         data.add(client.getId());
         data.add(client.getSalt());
         data.add(client.getPass_verifier());
+        data.add(SRP.getN());
         Wrapper wrapper=new Wrapper(1,data,null);
         ctx.write(wrapper);
     }
@@ -90,9 +91,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                     client.setbBig(b);
                     if (!"0".equals(client.scrambler())) {
                         client.keyComp();
-                        System.out.println(client.key);
                         String a = client.confirmationHash();
-                        System.out.println(a);
                         ArrayList<Object> data = new ArrayList<Object>();
                         data.add(client.getId());
                         data.add(a);

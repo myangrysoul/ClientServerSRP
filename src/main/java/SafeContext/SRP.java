@@ -9,20 +9,28 @@ import java.util.Random;
 
 import static java.lang.Math.sqrt;
 
-public  class SRP {
+public final class SRP {
 
     private static long n;
     private static long fi;
     private static final int k=3;
     private static long g;
-    private static int counter;
+
+    private SRP(){
+
+    }
 
 
-public SRP(){
-    n=23;
-    fi=n-1;
-    g=primitiveRoot(numberFactorization());
-}
+    public static void init (){
+        n=randomPrime();
+        fi=n-1;
+        g=primitiveRoot(numberFactorization());
+    }
+    public static void init (long n1){
+        n=n1;
+        fi=n-1;
+        g=primitiveRoot(numberFactorization());
+    }
 
     public static long getN() {
         return n;
@@ -35,26 +43,6 @@ public SRP(){
     public static long getG() {
         return g;
     }
-
-    public static void main(String[] args){
-
-    String a="asdajkasdxnksdhaukshjdxbasmxbnaskduy192e3173ew1isjkadxasd";
-        String b="asdajkasdxnksdhaukshjdxbasmxbnaskduy192e3173ew1isjkadxasd";
-        System.out.println(getHash(a.getBytes()));
-        System.out.println(getHash(b.getBytes()));
-
-        }
-    /*public static void init(){
-        if(counter<1){
-            n=randomPrime();
-            fi=n-1;
-            g=primitiveRoot(numberFactorization());
-            counter++;
-        }
-    }*/
-
-
-
 
 
 
@@ -86,12 +74,12 @@ public SRP(){
         String hashValue="";
         try {
 
-            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
             byte[] digestBytes = messageDigest.digest(inputBytes);
             hashValue = DatatypeConverter.printHexBinary(digestBytes).toLowerCase();
         }
         catch (NoSuchAlgorithmException e){
-            e.printStackTrace();
+            e.getCause();
         }
         return hashValue;
     }
@@ -114,7 +102,6 @@ public SRP(){
         if (number1 != 1) {
             fact.add(number1);
         }
-        System.out.println(fact);
         return fact;
 
     }

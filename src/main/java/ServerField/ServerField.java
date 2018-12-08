@@ -8,9 +8,9 @@ import java.util.Random;
 
 public  class ServerField {
 
-ServerField(String id, Account acc){
+ServerField(String id, Account acc,long n){
     accounts.put(id,acc);
-    new SRP();
+    SRP.init(n);
 }
 
     public HashMap<String, Account> accounts = new HashMap<String, Account>();
@@ -25,8 +25,7 @@ ServerField(String id, Account acc){
     }
 
     void generateB(String userId) {
-        //int b = randomNatural();
-        int b=942;
+        int b = randomNatural();
         accounts.get(userId).setB(b);
         long passV = accounts.get(userId).getPass_verifier();
         long bBig = SRP.getK() * passV + SRP.powMod(SRP.getG(), b, SRP.getN());
@@ -34,17 +33,17 @@ ServerField(String id, Account acc){
         accounts.get(userId).setbBig(bBig);
 
     }
-    void keyCompute(String userId){
+    void keyCompute(String userId) {
         BigInteger S;
-        Account acc=accounts.get(userId);
-        BigInteger U = new BigInteger(acc.getU(),16);
+        Account acc = accounts.get(userId);
+        BigInteger U = new BigInteger(acc.getU(), 16);
         long aBig = acc.getaBig();
         long b = acc.getB();
         long v = acc.getPass_verifier();
-        BigInteger ex1 = BigInteger.valueOf(v).modPow(U, BigInteger.valueOf(SRP.getN())).pow((int)b);
-        S=ex1.multiply(BigInteger.valueOf(aBig)).mod(BigInteger.valueOf(SRP.getN()));
-        System.out.println("S "+S);
+        BigInteger ex1 = BigInteger.valueOf(v).modPow(U, BigInteger.valueOf(SRP.getN()));
+        S = ex1.multiply(BigInteger.valueOf(aBig)).modPow(BigInteger.valueOf(b),BigInteger.valueOf(SRP.getN()));
         acc.setKey(SRP.getHash(S.toString().getBytes()));
+        System.out.println("Key: "+acc.getKey());
     }
 
    void confirmationHash(String userId){
