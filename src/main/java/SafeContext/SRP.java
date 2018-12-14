@@ -1,7 +1,6 @@
 package SafeContext;
 
 import javax.xml.bind.DatatypeConverter;
-import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -13,23 +12,24 @@ public final class SRP {
 
     private static long n;
     private static long fi;
-    private static final int k=3;
+    private static final int k = 3;
     private static long g;
 
-    private SRP(){
+    private SRP() {
 
     }
 
 
-    public static void init (){
-        n=randomPrime();
-        fi=n-1;
-        g=primitiveRoot(numberFactorization());
+    public static void init() {
+        n = randomPrime();
+        fi = n - 1;
+        g = primitiveRoot(numberFactorization());
     }
-    public static void init (long n1){
-        n=n1;
-        fi=n-1;
-        g=primitiveRoot(numberFactorization());
+
+    public static void init(long n1) {
+        n = n1;
+        fi = n - 1;
+        g = primitiveRoot(numberFactorization());
     }
 
     public static long getN() {
@@ -43,8 +43,6 @@ public final class SRP {
     public static long getG() {
         return g;
     }
-
-
 
 
     private static boolean isPrime(int n) {
@@ -71,14 +69,13 @@ public final class SRP {
     }
 
     public static String getHash(byte[] inputBytes) {
-        String hashValue="";
+        String hashValue = "";
         try {
 
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
             byte[] digestBytes = messageDigest.digest(inputBytes);
             hashValue = DatatypeConverter.printHexBinary(digestBytes).toLowerCase();
-        }
-        catch (NoSuchAlgorithmException e){
+        } catch (NoSuchAlgorithmException e) {
             e.getCause();
         }
         return hashValue;
@@ -107,13 +104,12 @@ public final class SRP {
     }
 
 
-
     private static long primitiveRoot(ArrayList<Long> fact) {
         int g;
         for (g = 1; g <= fi + 1; g++) {
             boolean check = true;
             for (Long aFact : fact) {
-                long a= powMod(g, fi / aFact,fi+1);
+                long a = powMod(g, fi / aFact, fi + 1);
                 check &= a != 1;
             }
             if (check) {
@@ -124,7 +120,7 @@ public final class SRP {
     }
 
 
-    public static long powMod(long base, long exp, long mod ) {
+    public static long powMod(long base, long exp, long mod) {
         long d = 1;
         while (exp > 1) {
             if (exp % 2 == 0) {
@@ -132,15 +128,13 @@ public final class SRP {
                 exp /= 2;
             } else {
                 exp -= 1;
-                d= d * base % mod;
+                d = d * base % mod;
 
             }
         }
-        return d*base % mod;
+        return d * base % mod;
 
     }
-
-
 
 
 }

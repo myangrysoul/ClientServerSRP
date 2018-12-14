@@ -2,6 +2,7 @@ package ServerField;
 
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
@@ -18,11 +19,19 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 
+import java.util.HashMap;
+
 
 public final class Server {
 
+    private Server(){
+
+    }
+
     static final boolean SSL = System.getProperty("ssl") != null;
     static final int PORT = Integer.parseInt(System.getProperty("port", "8007"));
+    private static ServerField server;
+    static final HashMap<Channel, String> channelmap = new HashMap<Channel, String>();
 
     public static void main(String[] args) throws Exception {
         // Configure SSL.
@@ -62,6 +71,14 @@ public final class Server {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
+    }
+
+    public static void setServer(ServerField server) {
+        Server.server = server;
+    }
+
+    public static ServerField getServer() {
+        return server;
     }
 }
 

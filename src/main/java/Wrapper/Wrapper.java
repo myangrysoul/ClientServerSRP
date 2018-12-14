@@ -1,9 +1,6 @@
 package Wrapper;
 
 
-
-
-
 import com.sun.istack.internal.Nullable;
 
 import java.io.Serializable;
@@ -11,8 +8,9 @@ import java.util.ArrayList;
 
 
 public class Wrapper implements Serializable {
-    private int stage;
-    private ArrayList<Object> data;
+    private static final long serialVersionUID = 2901775676734480119L;
+    private final int stage;
+    private final ArrayList<Object> data;
     private final Object object;
 
     public int getStage() {
@@ -27,12 +25,12 @@ public class Wrapper implements Serializable {
         return object;
     }
 
-    public Wrapper(int stage, @Nullable ArrayList<Object> data, @Nullable Object object ){
-        this.stage=stage;
-        this.data=data;
-        this.object=object;
+    @SuppressWarnings("AssignmentOrReturnOfFieldWithMutableType")
+    public Wrapper(int stage, @Nullable ArrayList<Object> data, @Nullable Object object) {
+        this.stage = stage;
+        this.data = data;
+        this.object = object;
     }
-
 
 
 }

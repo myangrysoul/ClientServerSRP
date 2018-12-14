@@ -1,11 +1,43 @@
 package ServerField;
 
+import SafeContext.Key;
+
+
 public class Account {
-    private String user_salt;
-    private long pass_verifier;
+    private final String user_salt;
+    private final long pass_verifier;
     private long bBig;
     private long aBig;
     private long b;
+    private Key openKey;
+    private String destination;
+
+    public Key getOpenKey() {
+        return openKey;
+    }
+
+    public String getDestination() {
+        return destination;
+    }
+
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
+
+    public void setVerrified(boolean verrified) {
+        this.verrified = verrified;
+    }
+
+    private boolean verrified;
+
+    public boolean isVerrified() {
+        return verrified;
+    }
+
+    public void setOpenKey(Key openKey) {
+        this.openKey = openKey;
+    }
+
 
     public void setB(long b) {
         this.b = b;

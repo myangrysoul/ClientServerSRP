@@ -1,12 +1,14 @@
 package ClientField;
 
+import SafeContext.Key;
+import SafeContext.RSA;
 import SafeContext.SRP;
 import Wrapper.Wrapper;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -17,50 +19,17 @@ import java.util.Scanner;
 public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     //private final List<Integer> firstMessage;
-    public  final ArrayList<String> firstMessage=new ArrayList<String>();
     private ClientField client;
 
 
     /**
      * Creates a client-side handler.
      */
-    public ClientHandler() {
-        /*
-        firstMessage = new ArrayList<Integer>(ClientField.ObjectEchoClient.SIZE);
-        for (int i = 0; i < ClientField.ObjectEchoClient.SIZE; i ++) {
-        firstMessage.add(Integer.valueOf(i));
-        }
-        */
 
-    }
     @Override
-    public void channelRegistered(ChannelHandlerContext ctx) throws RuntimeException{
-        String id="";
-        String pass="";
-        Scanner in=new Scanner(System.in);
-        System.out.println("Enter Username");
-        if(in.hasNextLine()){
-            id=in.nextLine();
-        }
-        System.out.println("Enter pass");
-        if(in.hasNextLine()){
-            pass=in.nextLine();
-        }
-        if(id.length()>3&&pass.length()>3){
-            client=new ClientField(id,pass);
-            System.out.println(SRP.getN()+" "+SRP.getG());
-        }
-        else{
-            ctx.close();
-            throw new RuntimeException("Short pass or ID");
-        }
-        ArrayList<Object> data=new ArrayList<Object>();
-        data.add(client.getId());
-        data.add(client.getSalt());
-        data.add(client.getPass_verifier());
-        data.add(SRP.getN());
-        Wrapper wrapper=new Wrapper(1,data,null);
-        ctx.write(wrapper);
+    public void channelRegistered(ChannelHandlerContext ctx) {
+
+        registration(ctx);
     }
 
 
@@ -77,6 +46,74 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        if(client.isAuthPassed()){
+            messageHandle(msg);
+        }
+        else {
+            authentication(ctx, msg);
+        }
+
+    }
+
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) {
+        ctx.flush();
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        System.out.println(cause.getMessage());
+        ctx.close();
+    }
+
+    private void messageHandle(Object msg){
+        if(msg instanceof BigInteger){
+            System.out.println(client.rsaDecode((BigInteger) msg));
+        }
+        else if(msg instanceof Wrapper&&((Wrapper) msg).getStage()==404){
+            System.out.println(((Wrapper) msg).getObject());
+            ClientField.destination="";
+            System.out.println("Enter new destination");
+        }
+        else if(msg instanceof Wrapper&&((Wrapper) msg).getStage()==20){
+            ClientField.destination=(String)((Wrapper) msg).getObject();
+        }
+        else if(msg instanceof Wrapper&&((Wrapper) msg).getStage()==30){
+            Wrapper msg1=(Wrapper)msg;
+            client.setOpenKey((Key)msg1.getObject());
+        }
+    }
+    private void registration(ChannelHandlerContext ctx){
+        String id="";
+        String pass="";
+        Scanner in=new Scanner(System.in);
+        System.out.println("Enter Username");
+        if(in.hasNextLine()){
+            id=in.nextLine();
+        }
+        System.out.println("Enter pass");
+        if(in.hasNextLine()){
+            pass=in.nextLine();
+        }
+        if(id.length()>3&&pass.length()>3){
+            client=new ClientField(id,pass);
+            Client.setClientField(client);
+            System.out.println(SRP.getN()+" "+SRP.getG());
+        }
+        else{
+            ctx.close();
+            throw new RuntimeException("Short pass or ID");
+        }
+        ArrayList<Object> data=new ArrayList<Object>();
+        data.add(client.getId());
+        data.add(client.getSalt());
+        data.add(client.getPass_verifier());
+        data.add(SRP.getN());
+        Wrapper wrapper=new Wrapper(1,data,null);
+        ctx.write(wrapper);
+    }
+
+    private void authentication(ChannelHandlerContext ctx, Object msg){
         if (msg instanceof String) {
             System.out.println(msg);
         }
@@ -123,6 +160,11 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             case 3:
                 if(msg1.getObject().equals(client.getR())){
                     System.out.println("Its real server");
+                    ArrayList<Object> data=new ArrayList<Object>();
+                    data.add(client.getId());
+                    data.add(RSA.compute(client));
+                    ctx.writeAndFlush(new Wrapper(5,data,null));
+                    client.setAuthPassed(true);
                 }
                 else{
 
@@ -133,17 +175,5 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
             }
         }
-
-    }
-
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) {
-        ctx.flush();
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
-        ctx.close();
     }
 }
