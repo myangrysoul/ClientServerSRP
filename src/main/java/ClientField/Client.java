@@ -92,6 +92,7 @@ public final class Client {
                     lastWriteFuture = ch.writeAndFlush(new Wrapper(30, null, null));
                     ClientField.destination = "";
                 } else if (!ClientField.destination.isEmpty()) {
+                    System.out.println(ClientField.destination);
                     lastWriteFuture = ch.writeAndFlush(clientField.rsaEncode(line));
                 } else {
                     System.out.println("Use form \"/add destination_name\" to send a message to some1");

@@ -24,7 +24,7 @@ public class ClientField {
     private boolean authPassed;
     private Key closedKey;
     private Key openKey;
-    static String destination;
+    static String destination="";
 
     public void setClosedKey(Key closedKey) {
         this.closedKey = closedKey;
